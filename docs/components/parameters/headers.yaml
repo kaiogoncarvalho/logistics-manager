@@ -1,0 +1,10 @@
+Authorization:
+  in: header
+  name: Authorization
+  required: true
+  schema:
+    type: string
+    example: Bearer <token>
+  description: Token of oauth/token
+
+

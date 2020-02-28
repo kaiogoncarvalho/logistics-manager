@@ -1,0 +1,71 @@
+version: "3"
+
+networks:
+  default:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 177.70.1.0/16
+
+services:
+
+  php:
+    container_name: truckpad_php
+    build:
+      context: docker/php
+    environment:
+      DB_CONNECTION: mysql
+      DB_HOST: 177.70.1.3
+      DB_PORT: 3306
+      DB_DATABASE: truckpad
+      DB_USERNAME: root
+      DB_PASSWORD: secret
+    volumes:
+      - .:/opt/truckpad:delegated
+    networks:
+      default:
+         ipv4_address: 177.70.1.2
+
+  mysql:
+    container_name: truckpad_mysql
+    image: mysql:8.0.19
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: truckpad
+      MYSQL_USER: user
+      MYSQL_PASSWORD: secret
+    command: --default-authentication-plugin=mysql_native_password
+    ports:
+      - 3307:3306
+    networks:
+      default:
+         ipv4_address: 177.70.1.3
+
+  web:
+    container_name: truckpad_web
+    image: nginx:latest
+    volumes:
+      - .:/opt/truckpad:delegated
+      - ./docker/nginx:/etc/nginx/conf.d:delegated
+    depends_on:
+      - php
+    ports:
+      - 8080:8080
+    networks:
+      default:
+         ipv4_address: 177.70.1.4
+
+
+  swagger:
+    image: swaggerapi/swagger-ui
+    container_name: truckpad_swagger
+    environment:
+      API_URL: http://localhost:8080/v1/docs/swagger.yaml
+    ports:
+      - "7080:8080"
+    networks:
+      default:
+        ipv4_address: 177.70.1.5
+
+
+

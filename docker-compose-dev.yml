@@ -1,0 +1,19 @@
+version: "3"
+
+services:
+
+  php:
+    volumes:
+      - truckpad:/opt/truckpad:nocopy
+
+  web:
+    volumes:
+      - truckpad:/opt/truckpad:nocopy
+      - truckpad-nginx:/etc/nginx/conf.d:nocopy
+
+
+volumes:
+  truckpad:
+    external: true
+  truckpad-nginx:
+    external: true
