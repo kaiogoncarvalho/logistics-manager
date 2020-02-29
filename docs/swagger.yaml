@@ -52,6 +52,8 @@ paths:
                     $ref: './components/schemas/client.yaml#/schema'
     /v1/oauth/token:
         post:
+            parameters:
+              - $ref: './components/parameters/headers.yaml#/ContentType'
             requestBody:
               description: Body to authentication.
               required: true
@@ -79,6 +81,7 @@ paths:
       post:
         parameters:
           - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/headers.yaml#/ContentType'
         tags:
           - User
         summary: Create User

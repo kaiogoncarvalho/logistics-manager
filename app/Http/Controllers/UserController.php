@@ -4,9 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Services\UserService;
 use App\Http\Requests\CreateUserRequest;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Response;
-use Illuminate\Http\Request;
+use Illuminate\Http\{JsonResponse, Response, Request};
 
 class UserController extends Controller
 {
