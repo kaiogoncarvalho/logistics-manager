@@ -3,29 +3,45 @@
 namespace App\Services;
 
 use App\Models\Driver;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 /**
  * Class DriverService
  * @package App\Services
- * @method Driver getModel() : Model
  */
-class DriverService extends AbstractService
+class DriverService implements CrudService
 {
-    protected string $modelClass = Driver::class;
+    /**
+     * @var Driver
+     */
+    private Driver $driver;
     
-    public function getById(int $id): Driver
+    /**
+     * DriverService constructor.
+     * @param Driver $driver
+     */
+    public function __construct(Driver $driver)
     {
-        return $this->getModel()->findOrFail($id);
+        $this->driver = $driver;
     }
     
-    public function get()
+    /**
+     * @param int $id
+     * @return Driver
+     */
+    public function getById(int $id): Driver
     {
-        return $this->getModel()->all();
+        return $this->driver->findOrFail($id);
+    }
+    
+    public function getAll(int $perPage = 10, int $page = 1): LengthAwarePaginator
+    {
+        return $this->driver->paginate($perPage, '*', 'page', $page);
     }
     
     public function create(array $fields): Driver
     {
-        return $this->getModel()->create(
+        return $this->driver->create(
             [
                 'name'       => $fields['name'],
                 'cpf'        => $fields['cpf'],
@@ -39,24 +55,54 @@ class DriverService extends AbstractService
     
     public function delete(int $id): void
     {
-        $this->getModel()->destroy($id);
+        $this->driver->findOrFail($id)->delete();
     }
     
     public function update(int $id, array $fields = []): Driver
     {
         $driver = $this
-            ->getModel()
+            ->driver
             ->findOrFail($id);
         
-        $driver->name ??= $fields['name'];
-        $driver->cpf ??= $fields['cpf'];
-        $driver->birth_date ??= $fields['birth_date'];
-        $driver->gender ??= $fields['gender'];
-        $driver->own_truck ??= $fields['own_truck'];
-        $driver->cnh ??= $fields['cnh'];
+        $driver->name = $fields['name'] ?? $driver->name;
+        $driver->cpf = $fields['cpf'] ?? $driver->cpf;
+        $driver->birth_date = $fields['birth_date'] ?? $driver->birth_date;
+        $driver->gender = $fields['gender'] ?? $driver->gender;
+        $driver->own_truck = $fields['own_truck'] ?? $driver->own_truck;
+        $driver->cnh = $fields['cnh'] ?? $driver->cnh;
         
         $driver->save();
  
+        return $driver;
+    }
+    
+    public function getAllDeleted(int $perPage = 10, int $page = 1): LengthAwarePaginator
+
+    {
+        return $this
+            ->driver
+            ->onlyTrashed()
+            ->paginate(
+                $perPage,
+                '*',
+                'page',
+                $page
+            );
+            
+    }
+    
+    public function getDeletedById(int $driver_id): Driver
+    {
+        return $this
+            ->driver
+            ->onlyTrashed()
+            ->findOrFail($driver_id);
+    }
+    
+    public function recoverById(int $driver_id): Driver
+    {
+        $driver = $this->getDeletedById($driver_id);
+        $driver->restore();
         return $driver;
     }
     

@@ -24,6 +24,7 @@ class CreateDriversTable extends Migration
             $table->enum('cnh', CNH::getAll());
             $table->timestamps();
             $table->softDeletes();
+            $table->engine = 'InnoDB';
         });
     }
 

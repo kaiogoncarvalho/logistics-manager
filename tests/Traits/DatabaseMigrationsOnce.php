@@ -12,7 +12,7 @@ trait DatabaseMigrationsOnce
      *
      * @return void
      */
-    public function runDatabaseMigrations()
+    public function runDatabaseMigrationsOnce()
     {
         if(!self::$migrated){
             $this->artisan('migrate:fresh');

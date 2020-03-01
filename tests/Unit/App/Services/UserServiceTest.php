@@ -14,8 +14,9 @@ use Auth;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
- * @runTestsInSeparateProcesses
- * @preserveGlobalState disabled
+ * Class UserServiceTest
+ * @package Tests\Unit\App\Services
+ *
  */
 class UserServiceTest extends TestCase
 {
@@ -39,7 +40,7 @@ class UserServiceTest extends TestCase
             ->shouldReceive('create')
             ->once();
         
-        $userMock = $this->mock( 'alias:'.User::class);
+        $userMock = $this->mock( User::class);
         $userMock
             ->shouldReceive('create')
             ->once()
@@ -82,7 +83,7 @@ class UserServiceTest extends TestCase
         DB::shouldReceive('rollback')
             ->once();
         
-        $userMock = $this->mock('alias:' . User::class);
+        $userMock = $this->mock(User::class);
         $userMock
             ->shouldReceive('create')
             ->once()
@@ -125,7 +126,7 @@ class UserServiceTest extends TestCase
             ->once()
             ->andThrow(new Exception());
     
-        $userMock = $this->mock('alias:' . User::class);
+        $userMock = $this->mock(User::class);
         $userMock
             ->shouldReceive('create')
             ->once()
@@ -142,16 +143,19 @@ class UserServiceTest extends TestCase
             ->shouldReceive('clients')
             ->once()
             ->andReturn($clientMock);
-    
-        $userMock->name = $content['name'];
         
         $this->app->instance(User::class, $userMock);
         $this->app->make(UserService::class)->create($content);
     }
     
+    /**
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     * @runInSeparateProcess
+     * @preserveGlobalState disabled
+     */
     public function testGetCurrentUser()
     {
-        $authMock = $this->mock('alias:' . Auth::class);
+        $authMock = $this->mock('alias:'.Auth::class);
         $authMock
             ->shouldReceive('user')
             ->once()
@@ -166,7 +170,7 @@ class UserServiceTest extends TestCase
     {
         $id = 1;
     
-        $userMock = $this->mock('alias:' . User::class);
+        $userMock = $this->mock( User::class);
         $userMock
             ->shouldReceive('findOrFail')
             ->once()
@@ -183,7 +187,7 @@ class UserServiceTest extends TestCase
         $page = 5;
         $perPage = 15;
     
-        $userMock = $this->mock('alias:' . User::class);
+        $userMock = $this->mock(User::class);
         $userMock
             ->shouldReceive('paginate')
             ->once()

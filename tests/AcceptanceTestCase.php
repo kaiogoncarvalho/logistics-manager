@@ -3,9 +3,14 @@
 namespace Tests;
 
 use Illuminate\Foundation\Testing\DatabaseTransactions;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\Traits\DatabaseMigrationsOnce;
 
 abstract class AcceptanceTestCase extends TestCase
 {
-    use DatabaseMigrations, DatabaseTransactions;
+    use DatabaseMigrationsOnce, DatabaseTransactions;
+    
+    protected function setUpTraits(){
+        $this->runDatabaseMigrationsOnce();
+        parent::setUpTraits();
+    }
 }

@@ -18,6 +18,7 @@ class CreateTrucksTable extends Migration
             $table->string('name');
             $table->timestamps();
             $table->softDeletes();
+            $table->engine = 'InnoDB';
         });
     }
 

@@ -10,7 +10,10 @@ use App\Enums\Scope;
 use function GuzzleHttp\json_decode;
 use Laravel\Passport\Client;
 
-
+/**
+ * Class UserTest
+ * @package Tests\Acceptance
+ */
 class UserTest extends AcceptanceTestCase
 {
     public function testCreate()

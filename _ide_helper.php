@@ -1,4 +1,4 @@
-<?php /** 
+<?php /**
  * @noinspection RedundantSuppression
  * @noinspection ALL
  */

@@ -20,6 +20,7 @@ class CreateUsersTable extends Migration
             $table->string('password');
             $table->json('scopes');
             $table->timestamps();
+            $table->engine = 'InnoDB';
         });
     }
 

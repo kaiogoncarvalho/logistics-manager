@@ -30,6 +30,8 @@ class CreateTripsTable extends Migration
             $table->foreign('truck_id')
                 ->on('trucks')
                 ->references('id');
+    
+            $table->engine = 'InnoDB';
             
             
         });

@@ -11,56 +11,63 @@
 |
 */
 
-Route::prefix('/oauth')->group(
-    function () {
-        Route::middleware('guest')->post(
-            '/token',
-            '\Laravel\Passport\Http\Controllers\AccessTokenController@issueToken'
-        )->name('login');
-        
-        Route::middleware(['auth:api', 'scope:admin,user'])->group(
-            function () {
-                Route::get('/clients', 'UserController@getClients');
-            }
-        );
-        
-        Route::middleware(['auth:api', 'scope:admin'])->group(
-            function () {
-                Route::get('/scopes', '\Laravel\Passport\Http\Controllers\ScopeController@all');
-                Route::delete('/clients/{client_id}', '\Laravel\Passport\Http\Controllers\ClientController@destroy');
-            }
-        );
-    }
-);
-
-Route::prefix('/user')->group(
-    function () {
-        Route::middleware(['auth:api', 'scope:admin,user'])->group(
-            function () {
-                Route::get('', 'UserController@get');
-            }
-        );
-        
-        Route::middleware(['auth:api', 'scope:admin'])->group(
-            function () {
-                Route::post('', 'UserController@create');
-                Route::get('/{user_id}', 'UserController@getById');
-            }
-        );
-    }
-);
-
-Route::middleware(['auth:api', 'scope:admin'])->get('/users', 'UserController@getAll');
+Route::middleware('guest')->post(
+    'oauth/token',
+    '\Laravel\Passport\Http\Controllers\AccessTokenController@issueToken'
+)->name('login');
 
 Route::middleware(['auth:api', 'scope:admin,user'])
     ->group(
         function () {
-            Route::prefix('driver')->group(function () {
-                Route::post('', 'DriverController@create');
-                Route::get('/{driver_id}', 'DriverController@getById');
-                Route::patch('/{driver_id}', 'DriverController@update');
-                Route::delete('/{driver_id}', 'DriverController@delete');
-            });
-            Route::get('drivers', 'DriverController@get');
+            Route::prefix('/driver')->group(
+                function () {
+                    Route::post('', 'DriverController@create');
+                    Route::get('/{driver_id}', 'DriverController@getById')
+                        ->where(['driver_id' => '[0-9]+']);
+                    Route::patch('/{driver_id}', 'DriverController@update')
+                        ->where(['driver_id' => '[0-9]+']);
+                    Route::delete('/{driver_id}', 'DriverController@delete')
+                        ->where(['driver_id' => '[0-9]+']);
+                }
+            );
+            Route::get('/drivers', 'DriverController@getAll');
+            
+            Route::get('/oauth/clients', 'UserController@getClients');
+            
+            Route::get('/user', 'UserController@get');
+        }
+    );
+
+Route::middleware(['auth:api', 'scope:admin'])
+    ->group(
+        function () {
+            Route::prefix('/driver')->group(
+                function () {
+                    Route::get('/deleted/{driver_id}', 'DriverController@getDeletedById')
+                        ->where(['driver_id' => '[0-9]+']);
+                    Route::patch('/recover/{driver_id}', 'DriverController@recoverById')
+                        ->where(['driver_id' => '[0-9]+']);;
+                }
+            );
+            Route::get('drivers/deleted', 'DriverController@getAllDeleted');
+            
+            Route::prefix('/oauth')->group(
+                function () {
+                    Route::get('/scopes', '\Laravel\Passport\Http\Controllers\ScopeController@all');
+                    Route::delete(
+                        '/clients/{client_id}',
+                        '\Laravel\Passport\Http\Controllers\ClientController@destroy'
+                    )->where(['user_id' => '[0-9]+']);
+                }
+            );
+    
+            Route::prefix('/user')->group(
+                function () {
+                    Route::post('', 'UserController@create');
+                    Route::get('/{user_id}', 'UserController@getById')
+                        ->where(['user_id' => '[0-9]+']);
+                }
+            );
+            Route::get('/users', 'UserController@getAll');
         }
     );

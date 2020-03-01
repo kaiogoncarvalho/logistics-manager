@@ -5,22 +5,45 @@ namespace App\Http\Controllers;
 use App\Services\DriverService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\CreateDriverRequest;
-use App\Http\Requests\UpdateDriverRequest;
+use App\Http\Requests\{CreateDriverRequest, UpdateDriverRequest};
+use App\Models\Driver;
+use Illuminate\Http\Request;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
+/**
+ * Class DriverController
+ * @package App\Http\Controllers
+ */
 class DriverController extends Controller
 {
-    public function getById(int $driver_id, DriverService $driverService)
+    /**
+     * @param int $driver_id
+     * @param DriverService $driverService
+     * @return Driver
+     */
+    public function getById(int $driver_id, DriverService $driverService): Driver
     {
         return $driverService->getById($driver_id);
     }
     
-    public function get(DriverService $driverService)
+    /**
+     * @param DriverService $driverService
+     * @return LengthAwarePaginator
+     */
+    public function getAll(DriverService $driverService, Request $request): LengthAwarePaginator
     {
-        return $driverService->get();
+        return $driverService->getAll(
+            $request->get('perPage') ?? 10,
+            $request->get('page') ?? 1
+        );
     }
     
-    public function create(CreateDriverRequest $request, DriverService $driverService)
+    /**
+     * @param CreateDriverRequest $request
+     * @param DriverService $driverService
+     * @return JsonResponse
+     */
+    public function create(CreateDriverRequest $request, DriverService $driverService): JsonResponse
     {
         return new JsonResponse(
             $driverService->create(
@@ -39,14 +62,25 @@ class DriverController extends Controller
         );
     }
     
-    public function delete(int $driver_id, DriverService $driverService)
+    /**
+     * @param int $driver_id
+     * @param DriverService $driverService
+     * @return JsonResponse
+     */
+    public function delete(int $driver_id, DriverService $driverService): JsonResponse
     {
         $driverService->delete($driver_id);
         
         return new JsonResponse([], Response::HTTP_NO_CONTENT);
     }
     
-    public function update(int $driver_id, UpdateDriverRequest $request, DriverService $driverService)
+    /**
+     * @param int $driver_id
+     * @param UpdateDriverRequest $request
+     * @param DriverService $driverService
+     * @return Driver
+     */
+    public function update(int $driver_id, UpdateDriverRequest $request, DriverService $driverService): Driver
     {
         return $driverService->update(
             $driver_id,
@@ -61,5 +95,38 @@ class DriverController extends Controller
                 ]
             )
         );
+    }
+    
+    /**
+     * @param DriverService $driverService
+     * @param Request $request
+     */
+    public function getAllDeleted(DriverService $driverService, Request $request)
+    {
+        return $driverService->getAllDeleted(
+            $request->get('perPage') ?? 10,
+            $request->get('page') ?? 1
+        );
+    }
+    
+    /**
+     * @param int $driver_id
+     * @param DriverService $driverService
+     * @return Driver
+     */
+    public function getDeletedById(int $driver_id, DriverService $driverService): Driver
+    {
+        return $driverService->getDeletedById($driver_id);
+    }
+    
+    
+    /**
+     * @param int $driver_id
+     * @param DriverService $driverService
+     * @return Driver
+     */
+    public function recoverById(int $driver_id, DriverService $driverService): Driver
+    {
+        return $driverService->recoverById($driver_id);
     }
 }

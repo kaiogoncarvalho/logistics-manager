@@ -132,7 +132,7 @@ paths:
                           schema:
                               $ref: './components/schemas/token.yaml#/schema'
 
-    /v1/user/{id}:
+    /v1/user/{user_id}:
       get:
         parameters:
           - $ref: './components/parameters/headers.yaml#/Authorization'
@@ -233,7 +233,340 @@ paths:
                       example: 30
                       description: Total number itens
 
+    /v1/drivers:
+      get:
+        parameters:
+          - $ref: './components/parameters/queries.yaml#/page'
+          - $ref: './components/parameters/queries.yaml#/perPage'
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+        tags:
+          - Driver
+        summary: Get all Drivers
+        description: <b>Scopes:</b> admin, user
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '200':
+            description: All Drivers
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    current_page:
+                      type: integer
+                      example: 1
+                      description: Current Page
+                    data:
+                      type: array
+                      items:
+                        $ref: './components/schemas/driver.yaml#/schema'
+                    first_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/drivers?page=1
+                      description: URL First Page
+                    from:
+                      type: integer
+                      example: 11
+                      description: Number of First User
+                    last_page:
+                      type: integer
+                      example: 3
+                      description: Number of Last Page
+                    last_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/drivers?page=2
+                      description: URL Last Page
+                    next_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/drivers?page=3
+                      description: URL Next Page
+                    path:
+                      type: string
+                      example: http://localhost:8080/v1/drivers
+                      description: URL
+                    per_page:
+                      type: integer
+                      example: 10
+                      description: Number itens per page
+                    prev_page_url:
+                      type: integer
+                      example: http://localhost:8080/v1/drivers?page=1
+                      description: URL Next Page
+                    to:
+                      type: integer
+                      example: 20
+                      description: Number last item of page
+                    total:
+                      type: integer
+                      example: 30
+                      description: Total number itens
 
+    /v1/drivers/deleted:
+      get:
+        parameters:
+          - $ref: './components/parameters/queries.yaml#/page'
+          - $ref: './components/parameters/queries.yaml#/perPage'
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+        tags:
+          - Driver
+        summary: Get all Drivers Deleted
+        description: <b>Scopes:</b> admin
+        security:
+          - oAuth2:
+              - admin
+        securityDefinitions:
+          - oAuth2:
+              - admin
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '200':
+            description: All Drivers Deleted
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    current_page:
+                      type: integer
+                      example: 1
+                      description: Current Page
+                    data:
+                      type: array
+                      items:
+                        $ref: './components/schemas/driver.yaml#/schema'
+                    first_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/drivers/deleted?page=1
+                      description: URL First Page
+                    from:
+                      type: integer
+                      example: 11
+                      description: Number of First User
+                    last_page:
+                      type: integer
+                      example: 3
+                      description: Number of Last Page
+                    last_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/drivers/deleted?page=2
+                      description: URL Last Page
+                    next_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/drivers/deleted?page=3
+                      description: URL Next Page
+                    path:
+                      type: string
+                      example: http://localhost:8080/v1/drivers/deleted
+                      description: URL
+                    per_page:
+                      type: integer
+                      example: 10
+                      description: Number itens per page
+                    prev_page_url:
+                      type: integer
+                      example: http://localhost:8080/v1/drivers/deleted?page=1
+                      description: URL Next Page
+                    to:
+                      type: integer
+                      example: 20
+                      description: Number last item of page
+                    total:
+                      type: integer
+                      example: 30
+                      description: Total number itens
+
+    /v1/driver/deleted/{driver_id}:
+      get:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/path.yaml#/driverId'
+        tags:
+          - Driver
+        summary: Get Driver deleted information by ID
+        description: <b>Scopes:</b> admin
+        security:
+          - oAuth2:
+              - admin
+        securityDefinitions:
+          - oAuth2:
+              - admin
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '404':
+            $ref: './components/responses/errors/NotFound.yaml#/Resource'
+          '200':
+            description: Driver Information
+            content:
+              application/json:
+                schema:
+                  $ref: './components/schemas/driver.yaml#/schema'
+
+    /v1/driver/{driver_id}:
+      get:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/path.yaml#/driverId'
+        tags:
+          - Driver
+        summary: Get Driver information by ID
+        description: <b>Scopes:</b> admin, user
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '404':
+            $ref: './components/responses/errors/NotFound.yaml#/Resource'
+          '200':
+            description: Driver Information
+            content:
+              application/json:
+                schema:
+                  $ref: './components/schemas/driver.yaml#/schema'
+      patch:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/path.yaml#/driverId'
+        tags:
+          - Driver
+        summary: Update a Driver
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                $ref: './components/request/driver.yaml#/schema'
+        description: <b>Scopes:</b> admin, user </br> <b>All fields of body are optional</b>
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '404':
+            $ref: './components/responses/errors/NotFound.yaml#/Resource'
+          '200':
+            description: Driver Information
+            content:
+              application/json:
+                schema:
+                  $ref: './components/schemas/driver.yaml#/schema'
+
+      delete:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/path.yaml#/driverId'
+        tags:
+          - Driver
+        summary: Delete a Driver
+        description: <b>Scopes:</b> admin, user
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '404':
+            $ref: './components/responses/errors/NotFound.yaml#/Resource'
+          '204':
+            description: No Content
+
+
+    /v1/driver:
+      post:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+        tags:
+          - Driver
+        summary: Create a Driver
+        requestBody:
+          required: true
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: './components/request/driver.yaml#/schema'
+                  - required:
+                      - name
+                      - cpf
+                      - birth_date
+                      - gender
+                      - cnh
+        description: <b>Scopes:</b> admin, user
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '404':
+            $ref: './components/responses/errors/NotFound.yaml#/Resource'
+          '200':
+            description: Driver Information
+            content:
+              application/json:
+                schema:
+                  $ref: './components/schemas/driver.yaml#/schema'
+
+
+    /v1/driver/recover/{driver_id}:
+      patch:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/path.yaml#/driverId'
+        tags:
+          - Driver
+        summary: Recover a Driver
+        description: <b>Scopes:</b> admin
+        security:
+          - oAuth2:
+              - admin
+        securityDefinitions:
+          - oAuth2:
+              - admin
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '404':
+            $ref: './components/responses/errors/NotFound.yaml#/Resource'
+          '200':
+            description: Driver Information
+            content:
+              application/json:
+                schema:
+                  $ref: './components/schemas/driver.yaml#/schema'
 
 
 

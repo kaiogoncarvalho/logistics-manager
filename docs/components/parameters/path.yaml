@@ -1,8 +1,16 @@
 userId:
   in: path
-  name: id
+  name: user_id
   required: true
   schema:
     type: integer
     example: 1
   description: The User ID
+driverId:
+  in: path
+  name: driver_id
+  required: true
+  schema:
+    type: integer
+    example: 1
+  description: The Driver ID

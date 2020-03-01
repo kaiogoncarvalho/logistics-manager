@@ -13,12 +13,19 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class UserService
 {
+    private User $user;
+    
+    public function __construct(User $user)
+    {
+        $this->user = $user;
+    }
+    
     public function create(array $fields): User
     {
         DB::beginTransaction();
         
         try {
-            $user = User::create(
+            $user = $this->user->create(
                 [
                     'name'     => $fields['name'],
                     'email'    => $fields['email'],
@@ -58,7 +65,7 @@ class UserService
     
     public function getById(int $id): User
     {
-        return User::findOrFail($id);
+        return $this->user->findOrFail($id);
     }
     
     /**
@@ -68,6 +75,6 @@ class UserService
      */
     public function getAll(int $perPage = 10, int $page = 1): LengthAwarePaginator
     {
-        return User::paginate($perPage, '*', 'page', $page);
+        return $this->user->paginate($perPage, '*', 'page', $page);
     }
 }

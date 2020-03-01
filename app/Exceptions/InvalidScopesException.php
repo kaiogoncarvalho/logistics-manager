@@ -8,8 +8,9 @@ use Throwable;
 use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Exception;
 
-class InvalidScopesException extends \Exception implements Responsable
+class InvalidScopesException extends Exception implements Responsable
 {
     private $requiredScopes;
     private $userScopes;
@@ -55,8 +56,6 @@ class InvalidScopesException extends \Exception implements Responsable
     {
         $this->userScopes = $userScopes;
     }
-    
- 
     
     
     public function toResponse($request)
