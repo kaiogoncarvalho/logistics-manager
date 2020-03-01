@@ -34,7 +34,7 @@ class UpdateDriverRequest extends FormRequest
                 'cpf',
                 "unique:drivers,cpf,{$id},id"
             ],
-            'birth_date' => 'date',
+            'birth_date' => 'date|before:now',
             'gender'     => [
                 Rule::in(Gender::getAll())
             ],

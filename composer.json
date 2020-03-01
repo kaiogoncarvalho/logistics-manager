@@ -15,7 +15,8 @@
         "laravel/tinker": "^2.0",
         "ext-json": "*",
         "ext-pdo": "*",
-        "geekcom/validator-docs" : "^3.3"
+        "geekcom/validator-docs" : "^3.3",
+        "grimzy/laravel-mysql-spatial": "^2.0"
     },
     "require-dev": {
         "roave/security-advisories": "dev-master",

@@ -31,6 +31,19 @@ Route::middleware(['auth:api', 'scope:admin,user'])
                 }
             );
             Route::get('/drivers', 'DriverController@getAll');
+    
+            Route::prefix('/trip')->group(
+                function () {
+                    Route::post('', 'TripController@create');
+                    Route::get('/{trip_id}', 'TripController@getById')
+                        ->where(['trip_id' => '[0-9]+']);
+                    Route::patch('/{trip_id}', 'TripController@update')
+                        ->where(['trip_id' => '[0-9]+']);
+                    Route::delete('/{trip_id}', 'TripController@delete')
+                        ->where(['trip_id' => '[0-9]+']);
+                }
+            );
+            Route::get('/trips', 'TripController@getAll');
             
             Route::get('/oauth/clients', 'UserController@getClients');
             
@@ -50,6 +63,16 @@ Route::middleware(['auth:api', 'scope:admin'])
                 }
             );
             Route::get('drivers/deleted', 'DriverController@getAllDeleted');
+    
+            Route::prefix('/trip')->group(
+                function () {
+                    Route::get('/deleted/{trip_id}', 'TripController@getDeletedById')
+                        ->where(['trip_id' => '[0-9]+']);
+                    Route::patch('/recover/{trip_id}', 'TripController@recoverById')
+                        ->where(['trip_id' => '[0-9]+']);;
+                }
+            );
+            Route::get('trips/deleted', 'TripController@getAllDeleted');
             
             Route::prefix('/oauth')->group(
                 function () {

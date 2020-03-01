@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\{Builder, Model, SoftDeletes};
+use Grimzy\LaravelMysqlSpatial\Eloquent\SpatialTrait;
+use Grimzy\LaravelMysqlSpatial\Types\Point;
 
 /**
  * App\Models\Trip
@@ -37,7 +39,7 @@ use Illuminate\Database\Eloquent\{Builder, Model, SoftDeletes};
  */
 class Trip extends Model
 {
-    use SoftDeletes;
+    use SoftDeletes, SpatialTrait;
     
     protected $fillable = [
         'driver_id',
@@ -62,6 +64,11 @@ class Trip extends Model
         'updated_at'
     ];
     
+    protected $spatialFields = [
+        'destiny',
+        'origin'
+    ];
+    
     public function driver()
     {
         return $this->hasOne(Driver::class);
@@ -70,5 +77,21 @@ class Trip extends Model
     public function truck()
     {
         return $this->hasOne(Truck::class);
+    }
+    
+    /**
+     * @param $fields
+     */
+    public function setOriginAttribute($fields)
+    {
+        $this->attributes['origin'] = new Point($fields['lat'], $fields['lon']);
+    }
+    
+    /**
+     * @param $fields
+     */
+    public function setDestinyAttribute($fields)
+    {
+        $this->attributes['destiny'] = new Point($fields['lat'], $fields['lon']);
     }
 }

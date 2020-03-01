@@ -22,6 +22,7 @@ class CreateTripsTable extends Migration
             $table->point('origin');
             $table->point('destiny');
             $table->dateTime('trip_date')->default(Carbon::now());
+            $table->timestamps();
             $table->softDeletes();
             
             $table->foreign('driver_id')

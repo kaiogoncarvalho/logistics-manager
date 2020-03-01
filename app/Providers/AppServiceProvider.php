@@ -3,9 +3,6 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Faker\Generator;
-use Faker\Factory;
-
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -15,9 +12,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        $this->app->singleton(Generator::class, function () {
-            return Factory::create('pt_BR');
-        });
+ 
     }
 
     /**
