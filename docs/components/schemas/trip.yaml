@@ -1,0 +1,54 @@
+schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+      description: Trip ID
+    driver_id:
+      type: integer
+      example: 1
+      description: Driver ID
+    truck_id:
+      type: integer
+      example: 1
+      description: Truck ID
+    loaded:
+      type: boolean
+      example: false
+      description: Verification if Truck is loaded
+    origin:
+      type: object
+      properties:
+        type:
+          type: string
+          example: Point
+        coordinates:
+          type: array
+          items:
+            type: number
+            format: double
+            example: ['-10.586489', '5000.12567']
+            description: Longitude and Latitude in this order
+    destiny:
+      type: object
+      properties:
+        type:
+          type: string
+          example: Point
+        coordinates:
+          type: array
+          items:
+            type: number
+            format: double
+            example: ['-10.586489', '5000.12567']
+            description: Longitude and Latitude in this order
+    trip_date:
+      type: string
+      example: "2020-01-01 01:00:00"
+    created_at:
+      type: string
+      example: "2020-01-01 01:00:00"
+    updated_at:
+      type: string
+      example: "2020-01-01 01:00:00"

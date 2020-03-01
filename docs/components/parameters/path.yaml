@@ -14,3 +14,11 @@ driverId:
     type: integer
     example: 1
   description: The Driver ID
+tripId:
+  in: path
+  name: trip_id
+  required: true
+  schema:
+    type: integer
+    example: 1
+  description: The Trip ID

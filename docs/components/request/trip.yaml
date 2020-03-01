@@ -1,0 +1,41 @@
+schema:
+  type: object
+  properties:
+    driver_id:
+      type: integer
+      example: 1
+      description: Driver ID
+    truck_id:
+      type: integer
+      example: 1
+      description: Truck ID
+    loaded:
+      type: boolean
+      example: false
+      description: Verification if Truck is loaded
+    origin:
+      type: object
+      properties:
+        lat:
+          type: numeric
+          format: double
+          example: '-5.45412'
+          description: Latitude
+        lon:
+          type: numeric
+          example: '1.000152'
+          description: Longitude
+    destiny:
+      type: object
+      properties:
+        lat:
+          type: numeric
+          example: '-1.132158'
+          description: Latitude
+        lon:
+          type: numeric
+          example: '2.14568'
+          description: Longitude
+    trip_date:
+      type: string
+      example: "2020-01-01 01:00:00"
