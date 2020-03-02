@@ -37,12 +37,18 @@ For install is necessary follow this steps:
 * Acess the directory of project
 * give permissions for logs:
     * `sudo chmod 777 -R storage`
+* run this command to generate .env
+    * `cp .env.example .env `   
+* run this command to generate key:
+    * `docker-compose exec php php artisan key:generate` 
 * run this command to install libraries
     *  `composer install`
 * run this command to create tables
     * `php artisan migrate`
 * run this command to create admin user
     * `php artisan db:seed`
+* run to generate private and public key of Oauth 2.0:
+    * `docker-compose exec php php artisan passport:install`
 
 
 ## Tests
