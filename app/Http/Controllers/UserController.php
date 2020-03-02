@@ -6,6 +6,7 @@ use App\Services\UserService;
 use App\Http\Requests\CreateUserRequest;
 use Illuminate\Http\{JsonResponse, Response, Request};
 use App\Enums\Paginate;
+use App\Http\Requests\SearchUserRequest;
 
 class UserController extends Controller
 {
@@ -67,11 +68,11 @@ class UserController extends Controller
     }
     
     /**
-     * @param Request $request
+     * @param SearchUserRequest $request
      * @param UserService $userService
      * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function getAll(Request $request, UserService $userService)
+    public function getAll(SearchUserRequest $request, UserService $userService)
     {
         return $userService
             ->getAll(

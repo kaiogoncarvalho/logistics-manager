@@ -5,7 +5,6 @@ namespace Tests\Unit\App\Services;
 use App\Models\Trip;
 use Tests\TestCase;
 use App\Services\TripService;
-use Illuminate\Pagination\LengthAwarePaginator;
 
 class TripServiceTest extends TestCase
 {
@@ -31,25 +30,20 @@ class TripServiceTest extends TestCase
         $this->app->make(TripService::class)->delete($id);
     }
     
-    public function testGetAllDeleted()
+    public function testGetDeleted()
     {
         $tripMock = $this->mock(Trip::class);
+        $tripMock
+            ->shouldReceive('getFilters')
+            ->once()
+            ->andReturn([]);
         $tripMock
             ->shouldReceive('onlyTrashed')
             ->once()
             ->andReturnSelf();
     
-        $page = 1;
-        $perPage = 10;
-        
-        $tripMock
-            ->shouldReceive('paginate')
-            ->once()
-            ->with($perPage, '*', 'page', $page)
-            ->andReturn($this->mock(LengthAwarePaginator::class));
-    
         $this->app->instance(Trip::class, $tripMock);
-        $this->app->make(TripService::class)->getAllDeleted($perPage, $page);
+        $this->app->make(TripService::class)->getDeleted();
     }
     
     public function testGetById()
@@ -202,17 +196,19 @@ class TripServiceTest extends TestCase
     
     public function testGetAll()
     {
-        $page = 1;
-        $perPage = 10;
-        
         $tripMock = $this->mock(Trip::class);
         $tripMock
-            ->shouldReceive('paginate')
+            ->shouldReceive('getFilters')
             ->once()
-            ->with($perPage, '*', 'page', $page)
-            ->andReturn($this->mock(LengthAwarePaginator::class));
+            ->andReturn(['trip_date' => '>=']);
+    
+        $tripMock
+            ->shouldReceive('where')
+            ->once()
+            ->with('trip_date', '>=', "2020-02-02 00:00:00")
+            ->andReturnSelf();
     
         $this->app->instance(Trip::class, $tripMock);
-        $this->app->make(TripService::class)->getAll($perPage, $page);
+        $this->app->make(TripService::class)->get(['trip_date' => "2020-02-02 00:00:00"]);
     }
 }

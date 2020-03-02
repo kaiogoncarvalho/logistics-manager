@@ -54,7 +54,7 @@ Route::middleware(['auth:api', 'scope:admin,user'])
             Route::prefix('/trips')->group(function () {
                 Route::get('', 'TripController@getAll');
                 Route::get('/loaded/total/{frequency}', 'TripController@getTotalByLoaded')
-                    ->where(['frequency' => 'today|weekly|monthly']);
+                    ->where(['frequency' => 'today|week|month']);
             });
             
     

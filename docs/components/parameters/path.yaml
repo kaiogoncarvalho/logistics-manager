@@ -30,3 +30,11 @@ truckId:
     type: integer
     example: 1
   description: The Truck ID
+frequency:
+  in: path
+  name: frequency
+  required: true
+  schema:
+    type: enum
+    enum: ['today', 'week', 'month']
+  description: The Frequency

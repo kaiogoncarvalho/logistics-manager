@@ -38,18 +38,14 @@ class TruckServiceTest extends TestCase
             ->shouldReceive('onlyTrashed')
             ->once()
             ->andReturnSelf();
-    
-        $page = 1;
-        $perPage = 10;
         
         $truckMock
-            ->shouldReceive('paginate')
+            ->shouldReceive('getFilters')
             ->once()
-            ->with($perPage, '*', 'page', $page)
-            ->andReturn($this->mock(LengthAwarePaginator::class));
+            ->andReturn([]);
     
         $this->app->instance(Truck::class, $truckMock);
-        $this->app->make(TruckService::class)->getAllDeleted($perPage, $page);
+        $this->app->make(TruckService::class)->getDeleted();
     }
     
     public function testGetById()
@@ -161,17 +157,13 @@ class TruckServiceTest extends TestCase
     
     public function testGetAll()
     {
-        $page = 1;
-        $perPage = 10;
-        
         $truckMock = $this->mock(Truck::class);
         $truckMock
-            ->shouldReceive('paginate')
+            ->shouldReceive('getFilters')
             ->once()
-            ->with($perPage, '*', 'page', $page)
-            ->andReturn($this->mock(LengthAwarePaginator::class));
+            ->andReturn([]);
     
         $this->app->instance(Truck::class, $truckMock);
-        $this->app->make(TruckService::class)->getAll($perPage, $page);
+        $this->app->make(TruckService::class)->get();
     }
 }

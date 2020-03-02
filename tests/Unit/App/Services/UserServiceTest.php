@@ -184,21 +184,17 @@ class UserServiceTest extends TestCase
     
     public function testGetAll()
     {
-        $page = 5;
-        $perPage = 15;
-    
         $userMock = $this->mock(User::class);
         $userMock
-            ->shouldReceive('paginate')
+            ->shouldReceive('getFilters')
             ->once()
-            ->with(
-                $perPage,
-                '*',
-                'page',
-                $page
-            )->andReturn($this->partialMock(LengthAwarePaginator::class));
+            ->andReturn([]);
+        $userMock
+            ->shouldReceive('orderBy')
+            ->once()
+            ->andReturn('name');
     
         $this->app->instance(User::class, $userMock);
-        $this->app->make(UserService::class)->getAll($perPage, $page);
+        $this->app->make(UserService::class)->getAll([], 'name');
     }
 }

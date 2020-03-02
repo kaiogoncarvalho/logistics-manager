@@ -1,0 +1,115 @@
+start_trip_date:
+  in: query
+  name: start_trip_date
+  schema:
+    type: string
+    description: Start Date of Trip
+    example: "2020-01-01 01:00:00"
+    default: Today First Hour
+end_trip_date:
+  in: query
+  name: end_trip_date
+  schema:
+    type: string
+    description: Start Date of Trip
+    example: "2020-01-01 01:00:00"
+    default: Today Last Hour
+order:
+  in: query
+  name: order
+  schema:
+    type: enum
+    description: Ordenate by value
+    enum: [
+      'name',
+      'cpf',
+      'birth_date',
+      'gender',
+      'own_truck',
+      'cnh'
+    ]
+    example: name
+orders:
+  in: query
+  name: orders
+  schema:
+    type: array
+    items:
+      type: enum
+      description: Ordenate by array of values
+      enum: [
+        'name',
+        'cpf',
+        'birth_date',
+        'gender',
+        'own_truck',
+        'cnh'
+      ]
+      example: [name, birth_date]
+
+filters:
+  start_birth_date:
+    in: query
+    name: start_birth_date
+    description: Filter by Start Date of Birth Date
+    schema:
+      type: string
+      example: "2020-01-01 01:00:00"
+  end_birth_date:
+    in: query
+    name: end_birth_date
+    description: Filter by Start Date of Birth Date
+    schema:
+      type: string
+      example: "2020-01-01 01:00:00"
+  name:
+    in: query
+    name: name
+    description: Filter by Name of Driver
+    schema:
+      type: string
+      example: "Name"
+  own_truck:
+    in: query
+    name: own_truck
+    description: Filter by driver has a truck
+    schema:
+      type: boolean
+      example: true
+  gender:
+    in: query
+    name: gender
+    description: Filter by gender
+    schema:
+      type: enum
+      enum: ['female', 'male', 'others']
+      example: female
+  genders:
+    in: query
+    name: genders
+    description: Filter by array of genders
+    schema:
+      type: array
+      items:
+        type: enum
+        enum: ['female', 'male', 'others']
+        example: [female, others]
+  cnh:
+    in: query
+    name: cnh
+    description: Filter by the type of cnh
+    schema:
+      type: enum
+      enum: [A, B, C, D, E, AAC, AB, AC, AD, AE]
+      example: E
+  cnhs:
+    in: query
+    name: cnhs
+    description: Filter by array of CNH types
+    schema:
+      type: array
+      items:
+        type: enum
+        enum: [A, B, C, D, E, AAC, AB, AC, AD, AE]
+        example: [AB, AC]
+

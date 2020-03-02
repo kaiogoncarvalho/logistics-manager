@@ -91,7 +91,7 @@ class TripTest extends AcceptanceTestCase
         
         $response = $this->json(
             'GET',
-            '/v1/trips?page=2&perPage=5'
+            '/v1/trips?page=2&per_page=5'
         )->assertStatus(Response::HTTP_OK);
         
         $content = json_decode($response->getContent(), true);
@@ -275,7 +275,7 @@ class TripTest extends AcceptanceTestCase
         
         $response = $this->json(
             'GET',
-            '/v1/trips/deleted?page=2&perPage=5'
+            '/v1/trips/deleted?page=2&per_page=5'
         )->assertStatus(Response::HTTP_OK);
         
         $content = json_decode($response->getContent(), true);

@@ -89,11 +89,10 @@ class DriverService implements CrudService
     {
         $drivers = $this->filter(
             $this
-                ->driver
-                ->onlyTrashed(),
+                ->driver,
             $filters
         );
-        return $this->order($drivers, $order);
+        return $this->order($drivers, $order)->onlyTrashed();
     }
     
     public function getDeletedById(int $driver_id): Driver

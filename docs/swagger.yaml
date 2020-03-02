@@ -161,9 +161,13 @@ paths:
     /v1/users:
       get:
         parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
           - $ref: './components/parameters/queries.yaml#/page'
           - $ref: './components/parameters/queries.yaml#/perPage'
-          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/queries_user.yaml#/order'
+          - $ref: './components/parameters/queries_user.yaml#/orders'
+          - $ref: './components/parameters/queries_user.yaml#/filters/name'
+          - $ref: './components/parameters/queries_user.yaml#/filters/email'
         tags:
           - User
         summary: Get all Users
@@ -236,9 +240,19 @@ paths:
     /v1/drivers:
       get:
         parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
           - $ref: './components/parameters/queries.yaml#/page'
           - $ref: './components/parameters/queries.yaml#/perPage'
-          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/start_birth_date'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/end_birth_date'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/name'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/own_truck'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/gender'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/genders'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/cnh'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/cnhs'
+          - $ref: './components/parameters/queries_driver.yaml#/order'
+          - $ref: './components/parameters/queries_driver.yaml#/orders'
         tags:
           - Driver
         summary: Get all Drivers
@@ -313,9 +327,19 @@ paths:
     /v1/drivers/deleted:
       get:
         parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
           - $ref: './components/parameters/queries.yaml#/page'
           - $ref: './components/parameters/queries.yaml#/perPage'
-          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/start_birth_date'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/end_birth_date'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/name'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/own_truck'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/gender'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/genders'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/cnh'
+          - $ref: './components/parameters/queries_driver.yaml#/filters/cnhs'
+          - $ref: './components/parameters/queries_driver.yaml#/order'
+          - $ref: './components/parameters/queries_driver.yaml#/orders'
         tags:
           - Driver
         summary: Get all Drivers Deleted
@@ -411,6 +435,115 @@ paths:
               application/json:
                 schema:
                   $ref: './components/schemas/driver.yaml#/schema'
+
+    /v1/driver/trip/empty:
+      get:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/queries_driver.yaml#/start_trip_date'
+          - $ref: './components/parameters/queries_driver.yaml#/end_trip_date'
+        tags:
+          - Driver
+        summary: Get Drivers with Trip Empty
+        description: <b>Scopes:</b> admin, user <br>
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '404':
+            $ref: './components/responses/errors/NotFound.yaml#/Resource'
+          '200':
+            description: Driver With Trips Empty
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    current_page:
+                      type: integer
+                      example: 1
+                      description: Current Page
+                    data:
+                      type: array
+                      items:
+                        $ref: './components/schemas/driver_trips.yaml#/schema'
+                    first_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/driver/trip/empty?page=1
+                      description: URL First Page
+                    from:
+                      type: integer
+                      example: 11
+                      description: Number of First Register
+                    last_page:
+                      type: integer
+                      example: 3
+                      description: Number of Last Page
+                    last_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/drivers/trip/empty?page=2
+                      description: URL Last Page
+                    next_page_url:
+                      type: string
+                      example: http://localhost:8080/v1/drivers/trip/empty?page=3
+                      description: URL Next Page
+                    path:
+                      type: string
+                      example: http://localhost:8080/v1/drivers/trip/empty
+                      description: URL
+                    per_page:
+                      type: integer
+                      example: 10
+                      description: Number itens per page
+                    prev_page_url:
+                      type: integer
+                      example: http://localhost:8080/v1/drivers/trip/empty?page=1
+                      description: URL Next Page
+                    to:
+                      type: integer
+                      example: 20
+                      description: Number last item of page
+                    total:
+                      type: integer
+                      example: 30
+                      description: Total number itens
+
+    /v1/drivers/own_truck/total:
+      get:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+        tags:
+          - Driver
+        summary: Get Total of Drivers with own truck
+        description: <b>Scopes:</b> admin, user
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '200':
+            description: Total Drivers
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    total:
+                      type: integer
+                      example: 1000
 
     /v1/driver/{driver_id}:
       get:
@@ -747,6 +880,38 @@ paths:
               application/json:
                 schema:
                   $ref: './components/schemas/trip.yaml#/schema'
+
+    /v1/trips/loaded/total/{frequency}:
+      get:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+          - $ref: './components/parameters/path.yaml#/frequency'
+        tags:
+          - Trip
+        summary: Get Total of trips, today, this week and this month
+        description: <b>Scopes:</b> admin, user
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '200':
+            description: Total Trips
+            content:
+              application/json:
+                schema:
+                  type: object
+                  properties:
+                    total:
+                      type: integer
+                      example: 1000
+
 
     /v1/trip/{trip_id}:
       get:
@@ -1234,5 +1399,33 @@ paths:
               application/json:
                 schema:
                   $ref: './components/schemas/truck.yaml#/schema'
+
+    /v1/trucks/trips:
+      get:
+        parameters:
+          - $ref: './components/parameters/headers.yaml#/Authorization'
+        tags:
+          - Truck
+        summary: Get Trucks with trips
+        description: <b>Scopes:</b> admin, user
+        security:
+          - oAuth2:
+              - admin
+              - user
+        securityDefinitions:
+          - oAuth2:
+              - admin
+              - user
+        responses:
+          '500':
+            $ref: './components/responses/errors/InternalServerError.yaml#/InternalServerError'
+          '404':
+            $ref: './components/responses/errors/NotFound.yaml#/Resource'
+          '200':
+            description: Truck Information with trips coordinates of origin and destiny
+            content:
+              application/json:
+                schema:
+                  $ref: './components/schemas/truck_trips.yaml#/schema'
 
 

@@ -75,7 +75,7 @@ class TruckTest extends AcceptanceTestCase
         
         $response = $this->json(
             'GET',
-            '/v1/trucks?page=3&perPage=5'
+            '/v1/trucks?page=3&per_page=5'
         )->assertStatus(Response::HTTP_OK);
         
         $content = json_decode($response->getContent(), true);
@@ -234,7 +234,7 @@ class TruckTest extends AcceptanceTestCase
         
         $response = $this->json(
             'GET',
-            '/v1/trucks/deleted?page=2&perPage=5'
+            '/v1/trucks/deleted?page=2&per_page=5'
         )->assertStatus(Response::HTTP_OK);
         
         $content = json_decode($response->getContent(), true);

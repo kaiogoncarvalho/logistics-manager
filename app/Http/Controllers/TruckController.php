@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\TruckService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\{CreateTruckRequest, UpdateTruckRequest};
+use App\Http\Requests\{CreateTruckRequest, SearchTruckRequest, UpdateTruckRequest};
 use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -29,9 +29,10 @@ class TruckController extends Controller
     
     /**
      * @param TruckService $truckService
+     * @param SearchTruckRequest $request
      * @return LengthAwarePaginator
      */
-    public function getAll(TruckService $truckService, Request $request): LengthAwarePaginator
+    public function getAll(TruckService $truckService, SearchTruckRequest $request): LengthAwarePaginator
     {
         return $truckService
             ->get(
@@ -100,9 +101,10 @@ class TruckController extends Controller
     
     /**
      * @param TruckService $truckService
-     * @param Request $request
+     * @param SearchTruckRequest $request
+     * @return LengthAwarePaginator
      */
-    public function getAllDeleted(TruckService $truckService, Request $request)
+    public function getAllDeleted(TruckService $truckService, SearchTruckRequest $request)
     {
         return $truckService->getDeleted(
             $request->except(
@@ -140,7 +142,7 @@ class TruckController extends Controller
         return $truckService->recoverById($driver_id);
     }
     
-    public function getWithTrips(TruckService $truckService, Request $request)
+    public function getWithTrips(TruckService $truckService)
     {
         return $truckService
             ->getWithTrips();

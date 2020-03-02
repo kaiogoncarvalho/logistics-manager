@@ -94,13 +94,11 @@ class TripService implements CrudService
     {
         return $this->order(
             $this->filter(
-                $this
-                    ->trip
-                    ->onlyTrashed(),
+                $this->trip,
                 $filters
             ),
             $order
-        );
+        )->onlyTrashed();
     }
     
     public function getDeletedById(int $driver_id): Trip

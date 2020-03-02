@@ -37,7 +37,7 @@ class TruckService implements CrudService
         return $this->truck->findOrFail($id);
     }
     
-    public function get(array $filters, $order = null)
+    public function get(array $filters = [], $order = null)
     {
         return $this->order(
             $this->filter($this->truck, $filters),
@@ -72,17 +72,16 @@ class TruckService implements CrudService
         return $truck;
     }
     
-    public function getDeleted(array $filters, $order = null)
+    public function getDeleted(array $filters = [], $order = null)
     {
         return $this->order(
             $this->filter(
                 $this
-                    ->truck
-                    ->onlyTrashed(),
+                    ->truck,
                 $filters
             ),
             $order
-        );
+        )->onlyTrashed();
     }
     
     public function getDeletedById(int $driver_id): Truck

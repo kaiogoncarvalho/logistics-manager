@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\TripService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\{CreateTripRequest, UpdateDriverRequest, UpdateTripRequest};
+use App\Http\Requests\{CreateTripRequest, SearchTripRequest, UpdateDriverRequest, UpdateTripRequest};
 use App\Models\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -31,7 +31,7 @@ class TripController extends Controller
      * @param TripService $tripService
      * @return LengthAwarePaginator
      */
-    public function getAll(TripService $tripService, Request $request): LengthAwarePaginator
+    public function getAll(TripService $tripService, SearchTripRequest $request): LengthAwarePaginator
     {
         return $tripService
             ->get(
@@ -112,7 +112,7 @@ class TripController extends Controller
      * @param TripService $tripService
      * @param Request $request
      */
-    public function getAllDeleted(TripService $tripService, Request $request)
+    public function getAllDeleted(TripService $tripService, SearchTripRequest $request)
     {
         return $tripService->getDeleted(
             $request->except(

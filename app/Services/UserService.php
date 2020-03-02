@@ -72,7 +72,7 @@ class UserService
     }
     
     
-    public function getAll(array $filters, $order = null)
+    public function getAll(array $filters = [], $order = null)
     {
         return $this->order(
             $this->filter($this->user, $filters),

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\DriverService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\{CreateDriverRequest, SearchDriverRequest, UpdateDriverRequest};
+use App\Http\Requests\{CreateDriverRequest, SearchDriverByTripEmptyRequest, SearchDriverRequest, UpdateDriverRequest};
 use App\Models\Driver;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -150,12 +150,12 @@ class DriverController extends Controller
         return $driverService->recoverById($driver_id);
     }
     
-    public function getByTripEmpty(Request $request, DriverService $driverService)
+    public function getByTripEmpty(SearchDriverByTripEmptyRequest $request, DriverService $driverService)
     {
         return
             $driverService->getByTripEmpty(
-                $request->get('startDate'),
-                $request->get('endDate')
+                $request->get('start_trip_date'),
+                $request->get('end_trip_date')
             )->paginate(
                 ...Paginate::get($request->get('per_page'), $request->get('page'))
             );

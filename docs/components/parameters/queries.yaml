@@ -6,7 +6,7 @@ page:
     default: 1
     description: Current Page
 perPage:
-  in: header
+  in: query
   name: perpage
   schema:
     type: integer

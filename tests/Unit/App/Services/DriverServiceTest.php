@@ -34,25 +34,20 @@ class DriverServiceTest extends TestCase
         $this->app->make(DriverService::class)->delete($id);
     }
     
-    public function testGetAllDeleted()
+    public function testGetDeleted()
     {
         $driverMock = $this->mock(Driver::class);
+        $driverMock
+            ->shouldReceive('getFilters')
+            ->once()
+            ->andReturn([]);
         $driverMock
             ->shouldReceive('onlyTrashed')
             ->once()
             ->andReturnSelf();
     
-        $page = 1;
-        $perPage = 10;
-        
-        $driverMock
-            ->shouldReceive('paginate')
-            ->once()
-            ->with($perPage, '*', 'page', $page)
-            ->andReturn($this->mock(LengthAwarePaginator::class));
-    
         $this->app->instance(Driver::class, $driverMock);
-        $this->app->make(DriverService::class)->getAllDeleted($perPage, $page);
+        $this->app->make(DriverService::class)->getDeleted();
     }
     
     public function testGetById()
@@ -200,17 +195,20 @@ class DriverServiceTest extends TestCase
     
     public function testGetAll()
     {
-        $page = 1;
-        $perPage = 10;
-        
+        $genders = [Gender::MALE, Gender::OTHERS];
         $driverMock = $this->mock(Driver::class);
         $driverMock
-            ->shouldReceive('paginate')
+            ->shouldReceive('getFilters')
             ->once()
-            ->with($perPage, '*', 'page', $page)
-            ->andReturn($this->mock(LengthAwarePaginator::class));
+            ->andReturn(['genders' => 'in']);
+        
+        $driverMock
+            ->shouldReceive('whereIn')
+            ->once()
+            ->with('genders', $genders)
+            ->andReturnSelf();
     
         $this->app->instance(Driver::class, $driverMock);
-        $this->app->make(DriverService::class)->getAll($perPage, $page);
+        $this->app->make(DriverService::class)->get(['genders' => $genders]);
     }
 }
