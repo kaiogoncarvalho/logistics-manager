@@ -1,6 +1,6 @@
-# Truck Manager
+# Logistics  Manager
 
-This API is responsible for management of truck trips.
+This API is responsible for management of logistics.
 
 ## Install
 
@@ -13,15 +13,13 @@ For install is necessary follow this steps:
 
 * Acess the directory of project
 * give permissions for logs:
-    * `sudo chmod 777 -R storage`
-* run this command to install libraries
-    * docker run --rm --interactive --tty \     
-         --volume $PWD:/app \         
-         --user $(id -u):$(id -g) \         
-         composer install
+    * **MacOS:** `sudo chmod -R 777 storage`
+    * **Linux:** `sudo chmod 777 -R storage`
 * run this commands for install and start docker
     * `docker-compose build`
     * `docker-compose up -d`
+* run this command to install libraries
+    * `docker-compose exec php php composer install`
 * run this command for create tables
     * `docker-compose exec php php artisan migrate`
 * run this command for create admin user and create initial data
