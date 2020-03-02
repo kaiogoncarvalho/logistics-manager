@@ -18,6 +18,8 @@ For install is necessary follow this steps:
 * run this commands for install and start docker
     * `docker-compose build`
     * `docker-compose up -d`
+* run this command to generate .env
+    * `cp .env.example .env `   
 * run this command to install libraries
     * `docker-compose exec php php composer install`
 * run this command to generate key:
