@@ -129,4 +129,14 @@ class DriverController extends Controller
     {
         return $driverService->recoverById($driver_id);
     }
+    
+    public function getByTripEmpty(Request $request, DriverService $driverService)
+    {
+        return $driverService->getByTripEmpty(
+            $request->get('startDate'),
+            $request->get('endDate'),
+            $request->get('perPage'),
+            $request->get('page')
+        );
+    }
 }

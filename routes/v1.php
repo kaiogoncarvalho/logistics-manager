@@ -30,7 +30,13 @@ Route::middleware(['auth:api', 'scope:admin,user'])
                         ->where(['driver_id' => '[0-9]+']);
                 }
             );
-            Route::get('/drivers', 'DriverController@getAll');
+            
+            Route::prefix('/drivers')->group(function () {
+                Route::get('', 'DriverController@getAll');
+                Route::get('/trip/empty', 'DriverController@getByTripEmpty');
+            });
+            
+            
     
             Route::prefix('/trip')->group(
                 function () {
@@ -44,6 +50,19 @@ Route::middleware(['auth:api', 'scope:admin,user'])
                 }
             );
             Route::get('/trips', 'TripController@getAll');
+    
+            Route::prefix('/truck')->group(
+                function () {
+                    Route::post('', 'TruckController@create');
+                    Route::get('/{truck_id}', 'TruckController@getById')
+                        ->where(['truck_id' => '[0-9]+']);
+                    Route::patch('/{truck_id}', 'TruckController@update')
+                        ->where(['truck_id' => '[0-9]+']);
+                    Route::delete('/{truck_id}', 'TruckController@delete')
+                        ->where(['truck_id' => '[0-9]+']);
+                }
+            );
+            Route::get('/trucks', 'TruckController@getAll');
             
             Route::get('/oauth/clients', 'UserController@getClients');
             
@@ -73,6 +92,16 @@ Route::middleware(['auth:api', 'scope:admin'])
                 }
             );
             Route::get('trips/deleted', 'TripController@getAllDeleted');
+    
+            Route::prefix('/truck')->group(
+                function () {
+                    Route::get('/deleted/{truck_id}', 'TruckController@getDeletedById')
+                        ->where(['truck_id' => '[0-9]+']);
+                    Route::patch('/recover/{truck_id}', 'TruckController@recoverById')
+                        ->where(['truck_id' => '[0-9]+']);;
+                }
+            );
+            Route::get('trucks/deleted', 'TruckController@getAllDeleted');
             
             Route::prefix('/oauth')->group(
                 function () {

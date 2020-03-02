@@ -65,5 +65,9 @@ class Driver extends Model
         'deleted_at'
     ];
     
-    
+    public function trips()
+    {
+        return $this->hasMany(Trip::class);
+        
+    }
 }

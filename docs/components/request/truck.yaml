@@ -1,0 +1,7 @@
+schema:
+  type: object
+  properties:
+    name:
+      type: string
+      example: Caminhão Truck
+      description: The name of Truck

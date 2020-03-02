@@ -1,0 +1,17 @@
+schema:
+  type: object
+  properties:
+    id:
+      type: integer
+      example: 1
+      description: Truck ID
+    name:
+      type: string
+      example: Caminhão Truck
+      description: The name of Truck
+    created_at:
+      type: string
+      example: "2020-01-01 01:00:00"
+    updated_at:
+      type: string
+      example: "2020-01-01 01:00:00"

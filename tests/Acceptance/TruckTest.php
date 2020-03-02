@@ -3,7 +3,7 @@
 namespace Tests\Acceptance;
 
 use Tests\AcceptanceTestCase;
-use App\Models\Trip;
+use App\Models\Truck;
 use Laravel\Passport\Passport;
 use App\Models\User;
 use Illuminate\Http\Response;
@@ -11,11 +11,11 @@ use function GuzzleHttp\json_decode;
 use Carbon\Carbon;
 use App\Enums\Scope;
 
-class TripTest extends AcceptanceTestCase
+class TruckTest extends AcceptanceTestCase
 {
     public function testGetById()
     {
-        $trip = factory(Trip::class)->create();
+        $truck = factory(Truck::class)->create();
         $user = factory(User::class)->create();
         
         Passport::actingAs(
@@ -25,28 +25,12 @@ class TripTest extends AcceptanceTestCase
         
         $response = $this->json(
             'GET',
-            '/v1/trip/' . $trip->id,
+            '/v1/truck/' . $truck->id,
             )->assertStatus(Response::HTTP_OK);
         
         $content = json_decode($response->getContent(), true);
         
-        $tripData = $trip->toArray();
-        $tripData['origin'] = [
-            'type' => 'Point',
-            'coordinates' => [
-                $tripData['origin']->getLng(),
-                $tripData['origin']->getLat(),
-            ]
-        ];
-        $tripData['destiny'] = [
-            'type' => 'Point',
-            'coordinates' => [
-                $tripData['destiny']->getLng(),
-                $tripData['destiny']->getLat(),
-            ]
-        ];
-        
-        $this->assertEquals($tripData, $content);
+        $this->assertEquals($truck->toArray(), $content);
     }
     
     public function testGetByIdWhenDontExist()
@@ -60,7 +44,7 @@ class TripTest extends AcceptanceTestCase
         
         $this->json(
             'GET',
-            '/v1/trip/1',
+            '/v1/truck/1',
             )->assertStatus(Response::HTTP_NOT_FOUND);
     }
     
@@ -75,14 +59,14 @@ class TripTest extends AcceptanceTestCase
         
         $this->json(
             'GET',
-            '/v1/trip/integer',
+            '/v1/truck/float',
             )->assertStatus(Response::HTTP_NOT_FOUND);
     }
     
     public function testGetAll()
     {
         $user = factory(User::class)->create();
-        factory(Trip::class)->times(10)->create();
+        factory(Truck::class)->times(30)->create();
         
         Passport::actingAs(
             $user,
@@ -91,21 +75,21 @@ class TripTest extends AcceptanceTestCase
         
         $response = $this->json(
             'GET',
-            '/v1/trips?page=2&perPage=5'
+            '/v1/trucks?page=3&perPage=5'
         )->assertStatus(Response::HTTP_OK);
         
         $content = json_decode($response->getContent(), true);
         $this->assertCount(5, $content['data']);
-        $this->assertSame(2, $content['current_page']);
-        $this->assertSame(6, $content['from']);
-        $this->assertSame(10, $content['to']);
-        $this->assertSame(10, $content['total']);
+        $this->assertSame(3, $content['current_page']);
+        $this->assertSame(11, $content['from']);
+        $this->assertSame(15, $content['to']);
+        $this->assertSame(30, $content['total']);
     }
     
     public function testCreate()
     {
         $user = factory(User::class)->create();
-        $trip = factory(Trip::class)->raw();
+        $truck = factory(Truck::class)->make();
         
         Passport::actingAs(
             $user,
@@ -114,38 +98,28 @@ class TripTest extends AcceptanceTestCase
         
         $response = $this->json(
             'POST',
-            '/v1/trip',
-            $trip
+            '/v1/truck',
+            $truck->toArray()
         )->assertStatus(Response::HTTP_CREATED);
-    
-        $content = json_decode($response->getContent(), true);
+        
+        $content = $response->getOriginalContent();
         $this->assertArrayHasKey('id', $content);
         $this->assertArrayHasKey('updated_at', $content);
         $this->assertArrayHasKey('created_at', $content);
-    
-        $this->assertSame($trip['driver_id'], $content['driver_id']);
-        $this->assertSame($trip['truck_id'], $content['truck_id']);
-        $this->assertSame($trip['loaded'], $content['loaded']);
-        $this->assertSame($trip['trip_date'], $content['trip_date']);
-        $this->assertEquals($trip['origin']['lon'], $content['origin']['coordinates'][0]);
-        $this->assertEquals($trip['origin']['lat'], $content['origin']['coordinates'][1]);
-        $this->assertEquals($trip['destiny']['lon'], $content['destiny']['coordinates'][0]);
-        $this->assertEquals($trip['destiny']['lat'], $content['destiny']['coordinates'][1]);
-    
-        unset($trip['origin']);
-        unset($trip['destiny']);
-    
+        
+        $this->assertSame($truck->name, $content['name']);
+        
         $this->assertDatabaseHas(
-            'trips',
-            $trip
+            'trucks',
+            $truck->toArray()
         );
     }
     
     public function testUpdate()
     {
         $user = factory(User::class)->create();
-        $trip = factory(Trip::class)->create();
-        $tripUpdate = factory(Trip::class)->raw();
+        $truck = factory(Truck::class)->create();
+        $truckUpdate = factory(Truck::class)->make();
         
         Passport::actingAs(
             $user,
@@ -154,37 +128,27 @@ class TripTest extends AcceptanceTestCase
         
         $response = $this->json(
             'PATCH',
-            '/v1/trip/' . $trip->id,
-            $tripUpdate
+            '/v1/truck/' . $truck->id,
+            $truckUpdate->toArray()
         )->assertStatus(Response::HTTP_OK);
         
-        $content = json_decode($response->getContent(), true);
+        $content = $response->getOriginalContent();
         $this->assertArrayHasKey('id', $content);
         $this->assertArrayHasKey('updated_at', $content);
         $this->assertArrayHasKey('created_at', $content);
         
-        $this->assertSame($tripUpdate['driver_id'], $content['driver_id']);
-        $this->assertSame($tripUpdate['truck_id'], $content['truck_id']);
-        $this->assertSame($tripUpdate['loaded'], $content['loaded']);
-        $this->assertSame($tripUpdate['trip_date'], $content['trip_date']);
-        $this->assertEquals($tripUpdate['origin']['lon'], $content['origin']['coordinates'][0]);
-        $this->assertEquals($tripUpdate['origin']['lat'], $content['origin']['coordinates'][1]);
-        $this->assertEquals($tripUpdate['destiny']['lon'], $content['destiny']['coordinates'][0]);
-        $this->assertEquals($tripUpdate['destiny']['lat'], $content['destiny']['coordinates'][1]);
-        
-        unset($tripUpdate['origin']);
-        unset($tripUpdate['destiny']);
+        $this->assertSame($truckUpdate->name, $content['name']);
         
         $this->assertDatabaseHas(
-            'trips',
-            $tripUpdate
+            'trucks',
+            $truckUpdate->toArray()
         );
     }
     
     public function testDelete()
     {
         $user = factory(User::class)->create();
-        $trip = factory(Trip::class)->create();
+        $truck = factory(Truck::class)->create();
         
         Passport::actingAs(
             $user,
@@ -193,12 +157,12 @@ class TripTest extends AcceptanceTestCase
         
         $this->json(
             'DELETE',
-            '/v1/trip/' . $trip->id
+            '/v1/truck/' . $truck->id
         )->assertStatus(Response::HTTP_NO_CONTENT);
         
         $this->assertDatabaseMissing(
-            'trips',
-            $trip->toArray() + ['deleted_at' => null]
+            'trucks',
+            $truck->toArray() + ['deleted_at' => null]
         );
     }
     
@@ -206,7 +170,7 @@ class TripTest extends AcceptanceTestCase
     {
         $user = factory(User::class)
             ->create(['scopes' => [Scope::ADMIN]]);
-        $trip = factory(Trip::class)->create(
+        $truck = factory(Truck::class)->create(
             [
                 'deleted_at' => Carbon::now()
             ]
@@ -219,7 +183,7 @@ class TripTest extends AcceptanceTestCase
         
         $response = $this->json(
             'GET',
-            '/v1/trip/deleted/' . $trip->id
+            '/v1/truck/deleted/' . $truck->id
         )->assertStatus(Response::HTTP_OK);
         
         $content = $response->getOriginalContent();
@@ -227,19 +191,14 @@ class TripTest extends AcceptanceTestCase
         $this->assertArrayHasKey('deleted_at', $content);
         $this->assertArrayHasKey('created_at', $content);
         
-        $this->assertSame($trip->name, $content['name']);
-        $this->assertSame($trip->cpf, $content['cpf']);
-        $this->assertSame($trip->gender, $content['gender']);
-        $this->assertSame($trip->birth_date, $content['birth_date']);
-        $this->assertSame($trip->own_truck, $content['own_truck']);
-        $this->assertSame($trip->cnh, $content['cnh']);
+        $this->assertSame($truck->name, $content['name']);
     }
     
     public function testGetDeleteByIdWithInvalidScope()
     {
         $user = factory(User::class)
             ->create(['scopes' => [Scope::USER]]);
-        $trip = factory(Trip::class)->create(
+        $truck = factory(Truck::class)->create(
             [
                 'deleted_at' => Carbon::now()
             ]
@@ -252,7 +211,7 @@ class TripTest extends AcceptanceTestCase
         
         $this->json(
             'GET',
-            '/v1/trip/deleted/' . $trip->id
+            '/v1/truck/deleted/' . $truck->id
         )->assertStatus(Response::HTTP_UNAUTHORIZED);
         
        
@@ -262,7 +221,7 @@ class TripTest extends AcceptanceTestCase
     {
         $user = factory(User::class)
             ->create(['scopes' => [Scope::ADMIN]]);
-        factory(Trip::class)->times(10)->create(
+        factory(Truck::class)->times(15)->create(
             [
                 'deleted_at' => Carbon::now()
             ]
@@ -275,7 +234,7 @@ class TripTest extends AcceptanceTestCase
         
         $response = $this->json(
             'GET',
-            '/v1/trips/deleted?page=2&perPage=5'
+            '/v1/trucks/deleted?page=2&perPage=5'
         )->assertStatus(Response::HTTP_OK);
         
         $content = json_decode($response->getContent(), true);
@@ -283,14 +242,14 @@ class TripTest extends AcceptanceTestCase
         $this->assertSame(2, $content['current_page']);
         $this->assertSame(6, $content['from']);
         $this->assertSame(10, $content['to']);
-        $this->assertSame(10, $content['total']);
+        $this->assertSame(15, $content['total']);
     }
     
     public function testGetAllDeletedWithInvalidScope()
     {
         $user = factory(User::class)
             ->create(['scopes' => [Scope::USER]]);
-        factory(Trip::class)->times(10)->create(
+        factory(Truck::class)->times(10)->create(
             [
                 'deleted_at' => Carbon::now()
             ]
@@ -303,7 +262,7 @@ class TripTest extends AcceptanceTestCase
         
         $this->json(
             'GET',
-            '/v1/trips/deleted?page=2&perPage=5'
+            '/v1/trucks/deleted?page=2&perPage=5'
         )->assertStatus(Response::HTTP_UNAUTHORIZED);
         
         
@@ -313,7 +272,7 @@ class TripTest extends AcceptanceTestCase
     {
         $user = factory(User::class)
             ->create(['scopes' => [Scope::ADMIN]]);
-        $trip = factory(Trip::class)->create(
+        $truck = factory(Truck::class)->create(
             [
                 'deleted_at' => Carbon::now()
             ]
@@ -326,18 +285,16 @@ class TripTest extends AcceptanceTestCase
         
         $this->json(
             'PATCH',
-            '/v1/trip/recover/' . $trip->id
+            '/v1/truck/recover/' . $truck->id
         )->assertStatus(Response::HTTP_OK);
-    
-        $tripData = $trip->toArray();
         
-        unset($tripData['origin']);
-        unset($tripData['destiny']);
-        unset($tripData['updated_at']);
+        $truckData = $truck->toArray();
+        
+        unset($truckData['updated_at']);
         
         $this->assertDatabaseHas(
-            'trips',
-            $tripData + ['deleted_at' => null]
+            'trucks',
+            $truckData + ['deleted_at' => null]
         );
     }
     
@@ -345,7 +302,7 @@ class TripTest extends AcceptanceTestCase
     {
         $user = factory(User::class)
             ->create(['scopes' => [Scope::USER]]);
-        $trip = factory(Trip::class)->create(
+        $truck = factory(Truck::class)->create(
             [
                 'deleted_at' => Carbon::now()
             ]
@@ -358,7 +315,7 @@ class TripTest extends AcceptanceTestCase
         
         $this->json(
             'PATCH',
-            '/v1/trip/recover/' . $trip->id
+            '/v1/truck/recover/' . $truck->id
         )->assertStatus(Response::HTTP_UNAUTHORIZED);
     }
     

@@ -345,10 +345,14 @@ class DriverTest extends AcceptanceTestCase
             'PATCH',
             '/v1/driver/recover/' . $driver->id
         )->assertStatus(Response::HTTP_OK);
+    
+        $driverData = $driver->toArray();
+    
+        unset($driverData['updated_at']);
         
         $this->assertDatabaseHas(
             'drivers',
-            $driver->toArray() + ['deleted_at' => null]
+            $driverData + ['deleted_at' => null]
         );
     }
     
