@@ -20,11 +20,14 @@ For install is necessary follow this steps:
     * `docker-compose up -d`
 * run this command to install libraries
     * `docker-compose exec php php composer install`
+* run this command to generate key:
+    * `docker-compose exec php php artisan key:generate`
 * run this command for create tables
     * `docker-compose exec php php artisan migrate`
 * run this command for create admin user and create initial data
     * `docker-compose exec php php artisan db:seed`
-
+* run to generate private and public key of Oauth 2.0:
+    * `docker-compose exec php php artisan passport:install`
 
 
 **Install without Docker**
@@ -51,6 +54,8 @@ If you don't user Docker to Install use this commands in directory of project:
 
 
 ## Usage
+**IMPORTANT! All request with method POST need Content-Type: application/json in header**
+
 **The Endpoints use Oauth 2.0, so to generate bearer token use the endpoint /v1/oauth/token with this body:**
 
 `{
