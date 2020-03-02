@@ -33,7 +33,7 @@ class CreateDriverRequest extends FormRequest
                 'cpf',
                 'unique:drivers,cpf'
             ],
-            'birth_date' => 'required|date|before:now',
+            'birth_date' => 'required|date_format:Y-m-d|date|before:now',
             'gender'     => [
                 'required',
                 Rule::in(Gender::getAll())

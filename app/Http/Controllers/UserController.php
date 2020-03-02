@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Services\UserService;
 use App\Http\Requests\CreateUserRequest;
 use Illuminate\Http\{JsonResponse, Response, Request};
+use App\Enums\Paginate;
 
 class UserController extends Controller
 {
@@ -72,9 +73,19 @@ class UserController extends Controller
      */
     public function getAll(Request $request, UserService $userService)
     {
-        return $userService->getAll(
-            $request->get('perPage') ?? 10,
-            $request->get('page') ?? 1
+        return $userService
+            ->getAll(
+                $request->except(
+                    [
+                        'order',
+                        'per_page',
+                        'page',
+                        'orders'
+                    ]
+                ),
+                $request->get('order') ?? $request->get('orders')
+            )->paginate(
+                ...Paginate::get($request->get('per_page'), $request->get('page'))
             );
     }
 }

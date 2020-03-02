@@ -9,10 +9,13 @@ use Illuminate\Support\Str;
 use App\Enums\Scope;
 use Auth;
 use Illuminate\Contracts\Auth\Authenticatable;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Services\Traits\Filters;
+use App\Services\Traits\Order;
 
 class UserService
 {
+    use Filters, Order;
+    
     private User $user;
     
     public function __construct(User $user)
@@ -68,13 +71,12 @@ class UserService
         return $this->user->findOrFail($id);
     }
     
-    /**
-     * @param int $perPage
-     * @param int $page
-     * @return LengthAwarePaginator
-     */
-    public function getAll(int $perPage = 10, int $page = 1): LengthAwarePaginator
+    
+    public function getAll(array $filters, $order = null)
     {
-        return $this->user->paginate($perPage, '*', 'page', $page);
+        return $this->order(
+            $this->filter($this->user, $filters),
+            $order
+        );
     }
 }

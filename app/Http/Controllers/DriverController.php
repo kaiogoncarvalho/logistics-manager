@@ -5,10 +5,11 @@ namespace App\Http\Controllers;
 use App\Services\DriverService;
 use Illuminate\Http\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use App\Http\Requests\{CreateDriverRequest, UpdateDriverRequest};
+use App\Http\Requests\{CreateDriverRequest, SearchDriverRequest, UpdateDriverRequest};
 use App\Models\Driver;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Enums\Paginate;
 
 /**
  * Class DriverController
@@ -30,12 +31,22 @@ class DriverController extends Controller
      * @param DriverService $driverService
      * @return LengthAwarePaginator
      */
-    public function getAll(DriverService $driverService, Request $request): LengthAwarePaginator
+    public function getAll(DriverService $driverService, SearchDriverRequest $request): LengthAwarePaginator
     {
-        return $driverService->getAll(
-            $request->get('perPage') ?? 10,
-            $request->get('page') ?? 1
-        );
+        return $driverService
+            ->get(
+                $request->except(
+                    [
+                        'order',
+                        'per_page',
+                        'page',
+                        'orders'
+                    ]
+                ),
+                $request->get('order') ?? $request->get('orders')
+            )->paginate(
+                ...Paginate::get($request->get('per_page'), $request->get('page'))
+            );
     }
     
     /**
@@ -101,11 +112,20 @@ class DriverController extends Controller
      * @param DriverService $driverService
      * @param Request $request
      */
-    public function getAllDeleted(DriverService $driverService, Request $request)
+    public function getAllDeleted(DriverService $driverService, SearchDriverRequest $request)
     {
-        return $driverService->getAllDeleted(
-            $request->get('perPage') ?? 10,
-            $request->get('page') ?? 1
+        return $driverService->getDeleted(
+            $request->except(
+                [
+                    'order',
+                    'per_page',
+                    'page',
+                    'orders'
+                ]
+            ),
+            $request->get('order') ?? $request->get('orders')
+        )->paginate(
+            ...Paginate::get($request->get('per_page'), $request->get('page'))
         );
     }
     
@@ -132,11 +152,17 @@ class DriverController extends Controller
     
     public function getByTripEmpty(Request $request, DriverService $driverService)
     {
-        return $driverService->getByTripEmpty(
-            $request->get('startDate'),
-            $request->get('endDate'),
-            $request->get('perPage'),
-            $request->get('page')
-        );
+        return
+            $driverService->getByTripEmpty(
+                $request->get('startDate'),
+                $request->get('endDate')
+            )->paginate(
+                ...Paginate::get($request->get('per_page'), $request->get('page'))
+            );
+    }
+    
+    public function getTotalByOwnTruck(DriverService $driverService)
+    {
+        return new JsonResponse(['total' => $driverService->get(['own_truck' => true])->count()]);
     }
 }

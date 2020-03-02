@@ -9,6 +9,7 @@ use App\Http\Requests\{CreateTruckRequest, UpdateTruckRequest};
 use App\Models\Truck;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Enums\Paginate;
 
 /**
  * Class TruckController
@@ -32,10 +33,20 @@ class TruckController extends Controller
      */
     public function getAll(TruckService $truckService, Request $request): LengthAwarePaginator
     {
-        return $truckService->getAll(
-            $request->get('perPage') ?? 10,
-            $request->get('page') ?? 1
-        );
+        return $truckService
+            ->get(
+                $request->except(
+                    [
+                        'order',
+                        'per_page',
+                        'page',
+                        'orders'
+                    ]
+                ),
+                $request->get('order') ?? $request->get('orders')
+            )->paginate(
+                ...Paginate::get($request->get('per_page'), $request->get('page'))
+            );
     }
     
     /**
@@ -93,9 +104,18 @@ class TruckController extends Controller
      */
     public function getAllDeleted(TruckService $truckService, Request $request)
     {
-        return $truckService->getAllDeleted(
-            $request->get('perPage') ?? 10,
-            $request->get('page') ?? 1
+        return $truckService->getDeleted(
+            $request->except(
+                [
+                    'order',
+                    'per_page',
+                    'page',
+                    'orders'
+                ]
+            ),
+            $request->get('order') ?? $request->get('orders')
+        )->paginate(
+            ...Paginate::get($request->get('per_page'), $request->get('page'))
         );
     }
     
@@ -118,5 +138,11 @@ class TruckController extends Controller
     public function recoverById(int $driver_id, TruckService $truckService): Truck
     {
         return $truckService->recoverById($driver_id);
+    }
+    
+    public function getWithTrips(TruckService $truckService, Request $request)
+    {
+        return $truckService
+            ->getWithTrips();
     }
 }

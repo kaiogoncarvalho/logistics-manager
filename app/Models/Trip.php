@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\{Builder, Model, SoftDeletes};
 use Grimzy\LaravelMysqlSpatial\Eloquent\SpatialTrait;
 use Grimzy\LaravelMysqlSpatial\Types\Point;
+use App\Models\Interfaces\Filtered;
 
 /**
  * App\Models\Trip
@@ -37,7 +38,7 @@ use Grimzy\LaravelMysqlSpatial\Types\Point;
  * @method static \Illuminate\Database\Query\Builder|Trip withoutTrashed()
  * @mixin \Eloquent
  */
-class Trip extends Model
+class Trip extends Model implements Filtered
 {
     use SoftDeletes, SpatialTrait;
     
@@ -56,7 +57,8 @@ class Trip extends Model
     ];
     
     protected $hidden = [
-        'deleted_at', 'pivot'
+        'deleted_at',
+        'pivot'
     ];
     
     protected $dates = [
@@ -69,6 +71,21 @@ class Trip extends Model
         'origin'
     ];
     
+    protected $filters = [
+        'driver_id'       => '=',
+        'truck_id'        => '=',
+        'loaded'          => '=',
+        'start_trip_date' =>
+            [
+                'type' => '>=',
+                'name' => 'trip_date'
+            ],
+        'end_trip_date'   => [
+            'type' => '>=',
+            'name' => 'trip_date'
+        ]
+    ];
+    
     public function driver()
     {
         return $this->belongsTo(Driver::class);
@@ -76,7 +93,7 @@ class Trip extends Model
     
     public function truck()
     {
-        return $this->hasOne(Truck::class);
+        return $this->belongsTo(Truck::class);
     }
     
     /**
@@ -93,5 +110,10 @@ class Trip extends Model
     public function setDestinyAttribute($fields)
     {
         $this->attributes['destiny'] = new Point($fields['lat'], $fields['lon']);
+    }
+    
+    public function getFilters(): array
+    {
+        return $this->filters;
     }
 }

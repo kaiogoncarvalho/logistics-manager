@@ -9,6 +9,7 @@ use App\Http\Requests\{CreateTripRequest, UpdateDriverRequest, UpdateTripRequest
 use App\Models\Trip;
 use Illuminate\Http\Request;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Enums\Paginate;
 
 /**
  * Class TripController
@@ -32,10 +33,20 @@ class TripController extends Controller
      */
     public function getAll(TripService $tripService, Request $request): LengthAwarePaginator
     {
-        return $tripService->getAll(
-            $request->get('perPage') ?? 10,
-            $request->get('page') ?? 1
-        );
+        return $tripService
+            ->get(
+                $request->except(
+                    [
+                        'order',
+                        'per_page',
+                        'page',
+                        'orders'
+                    ]
+                ),
+                $request->get('order') ?? $request->get('orders')
+            )->paginate(
+                ...Paginate::get($request->get('per_page'), $request->get('page'))
+            );
     }
     
     /**
@@ -103,9 +114,18 @@ class TripController extends Controller
      */
     public function getAllDeleted(TripService $tripService, Request $request)
     {
-        return $tripService->getAllDeleted(
-            $request->get('perPage') ?? 10,
-            $request->get('page') ?? 1
+        return $tripService->getDeleted(
+            $request->except(
+                [
+                    'order',
+                    'per_page',
+                    'page',
+                    'orders'
+                ]
+            ),
+            $request->get('order') ?? $request->get('orders')
+        )->paginate(
+            ...Paginate::get($request->get('per_page'), $request->get('page'))
         );
     }
     
@@ -128,5 +148,10 @@ class TripController extends Controller
     public function recoverById(int $driver_id, TripService $tripService): Trip
     {
         return $tripService->recoverById($driver_id);
+    }
+    
+    public function getTotalByLoaded(string $frequency, TripService $tripService)
+    {
+        return new JsonResponse(['total' => $tripService->getByLoaded($frequency)->count()]);
     }
 }

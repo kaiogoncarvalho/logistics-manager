@@ -3,7 +3,8 @@
 namespace App\Services;
 
 use App\Models\Truck;
-use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use App\Services\Traits\Filters;
+use App\Services\Traits\Order;
 
 /**
  * Class TruckService
@@ -11,6 +12,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
  */
 class TruckService implements CrudService
 {
+    use Filters, Order;
+    
     /**
      * @var Truck
      */
@@ -34,9 +37,12 @@ class TruckService implements CrudService
         return $this->truck->findOrFail($id);
     }
     
-    public function getAll(int $perPage = 10, int $page = 1): LengthAwarePaginator
+    public function get(array $filters, $order = null)
     {
-        return $this->truck->paginate($perPage, '*', 'page', $page);
+        return $this->order(
+            $this->filter($this->truck, $filters),
+            $order
+        );
     }
     
     public function create(array $fields): Truck
@@ -66,17 +72,17 @@ class TruckService implements CrudService
         return $truck;
     }
     
-    public function getAllDeleted(int $perPage = 10, int $page = 1): LengthAwarePaginator
+    public function getDeleted(array $filters, $order = null)
     {
-        return $this
-            ->truck
-            ->onlyTrashed()
-            ->paginate(
-                $perPage,
-                '*',
-                'page',
-                $page
-            );
+        return $this->order(
+            $this->filter(
+                $this
+                    ->truck
+                    ->onlyTrashed(),
+                $filters
+            ),
+            $order
+        );
     }
     
     public function getDeletedById(int $driver_id): Truck
@@ -92,6 +98,11 @@ class TruckService implements CrudService
         $truck = $this->getDeletedById($driver_id);
         $truck->restore();
         return $truck;
+    }
+    
+    public function getWithTrips()
+    {
+        return $this->truck->has('trips')->with('trips:id,truck_id,origin,destiny')->select(['id', 'name'])->get();
     }
     
 }

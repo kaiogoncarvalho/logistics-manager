@@ -16,6 +16,7 @@ use Illuminate\Support\Carbon;
 use function GuzzleHttp\json_decode;
 use function GuzzleHttp\json_encode;
 use Laravel\Passport\Passport;
+use App\Models\Interfaces\Filtered;
 
 /**
  * App\Models\User
@@ -47,7 +48,7 @@ use Laravel\Passport\Passport;
  * @property mixed $scopes
  * @method static Builder|User whereScopes($value)
  */
-class User extends Authenticatable
+class User extends Authenticatable implements Filtered
 {
     use HasApiTokens, Notifiable;
     
@@ -75,6 +76,11 @@ class User extends Authenticatable
     protected $casts = [
         'created_at' => 'Y-m-d H:i:s',
         'updated_at' => 'Y-m-d H:i:s',
+    ];
+    
+    protected $filters = [
+        'name'  => 'like',
+        'email' => 'like',
     ];
     
     /**
@@ -114,6 +120,11 @@ class User extends Authenticatable
                 'updated_at',
             ]
         );
+    }
+    
+    public function getFilters(): array
+    {
+        return $this->filters;
     }
     
 }

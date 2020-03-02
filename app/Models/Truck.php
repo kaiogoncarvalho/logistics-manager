@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\{Builder, Model, SoftDeletes};
+use App\Models\Interfaces\Filtered;
 
 /**
  * App\Models\Truck
@@ -27,7 +28,7 @@ use Illuminate\Database\Eloquent\{Builder, Model, SoftDeletes};
  * @method static \Illuminate\Database\Query\Builder|Truck withoutTrashed()
  * @mixin \Eloquent
  */
-class Truck extends Model
+class Truck extends Model implements Filtered
 {
     use SoftDeletes;
     
@@ -36,11 +37,26 @@ class Truck extends Model
     ];
     
     protected $hidden = [
-        'deleted_at', 'pivot'
+        'deleted_at',
+        'pivot'
     ];
     
     protected $dates = [
         'created_at',
         'updated_at'
     ];
+    
+    protected $filters = [
+        'name' => 'like',
+    ];
+    
+    public function trips()
+    {
+        return $this->hasMany(Trip::class, 'truck_id');
+    }
+    
+    public function getFilters(): array
+    {
+        return $this->filters;
+    }
 }

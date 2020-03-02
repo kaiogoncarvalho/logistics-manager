@@ -34,6 +34,7 @@ Route::middleware(['auth:api', 'scope:admin,user'])
             Route::prefix('/drivers')->group(function () {
                 Route::get('', 'DriverController@getAll');
                 Route::get('/trip/empty', 'DriverController@getByTripEmpty');
+                Route::get('/own_truck/total', 'DriverController@getTotalByOwnTruck');
             });
             
             
@@ -49,7 +50,13 @@ Route::middleware(['auth:api', 'scope:admin,user'])
                         ->where(['trip_id' => '[0-9]+']);
                 }
             );
-            Route::get('/trips', 'TripController@getAll');
+    
+            Route::prefix('/trips')->group(function () {
+                Route::get('', 'TripController@getAll');
+                Route::get('/loaded/total/{frequency}', 'TripController@getTotalByLoaded')
+                    ->where(['frequency' => 'today|weekly|monthly']);
+            });
+            
     
             Route::prefix('/truck')->group(
                 function () {
@@ -62,7 +69,11 @@ Route::middleware(['auth:api', 'scope:admin,user'])
                         ->where(['truck_id' => '[0-9]+']);
                 }
             );
-            Route::get('/trucks', 'TruckController@getAll');
+    
+            Route::prefix('/trucks')->group(function () {
+                Route::get('', 'TruckController@getAll');
+                Route::get('/trips', 'TruckController@getWithTrips');
+            });
             
             Route::get('/oauth/clients', 'UserController@getClients');
             

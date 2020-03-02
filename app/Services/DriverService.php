@@ -7,6 +7,8 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
 use App\Enums\Paginate;
+use App\Services\Traits\Filters;
+use App\Services\Traits\Order;
 
 /**
  * Class DriverService
@@ -14,6 +16,9 @@ use App\Enums\Paginate;
  */
 class DriverService implements CrudService
 {
+    
+    use Filters, Order;
+    
     /**
      * @var Driver
      */
@@ -37,14 +42,10 @@ class DriverService implements CrudService
         return $this->driver->findOrFail($id);
     }
     
-    public function getAll(?int $perPage = null, ?int $page = null): LengthAwarePaginator
+    public function get(?array $filters = [], $order = null)
     {
-        return $this->driver->paginate(
-            $perPage ?? Paginate::PERPAGE,
-            '*',
-            Paginate::PAGEATTRIBUTE,
-            $page ?? Paginate::PAGE
-        );
+        $drivers = $this->filter($this->driver, $filters);
+        return $this->order($drivers, $order);
     }
     
     public function create(array $fields): Driver
@@ -84,17 +85,15 @@ class DriverService implements CrudService
         return $driver;
     }
     
-    public function getAllDeleted(?int $perPage = null, ?int $page = null): LengthAwarePaginator
+    public function getDeleted(array $filters = [], $order = null)
     {
-        return $this
-            ->driver
-            ->onlyTrashed()
-            ->paginate(
-                $perPage ?? Paginate::PERPAGE,
-                '*',
-                Paginate::PAGEATTRIBUTE,
-                $page ?? Paginate::PAGE
-            );
+        $drivers = $this->filter(
+            $this
+                ->driver
+                ->onlyTrashed(),
+            $filters
+        );
+        return $this->order($drivers, $order);
     }
     
     public function getDeletedById(int $driver_id): Driver
@@ -112,26 +111,22 @@ class DriverService implements CrudService
         return $driver;
     }
     
-    public function getByTripEmpty(?string $startDate = null, ?string $endDate = null, ?int $perPage = null, ?int $page = null)
+    public function getByTripEmpty(?string $startDate = null, ?string $endDate = null)
     {
         $startDate = $startDate ?? Carbon::now()->format('Y-m-d 00:00:00');
         $endDate = $endDate ?? Carbon::now()->format('Y-m-d 23:59:59');
         
         return $this->driver
+            ->has('trips')
             ->with(
                 [
-                    'trips' => function ($query) use($startDate, $endDate){
+                    'trips' => function ($query) use ($startDate, $endDate) {
                         $query
                             ->where('loaded', false)
                             ->where('trip_date', '>=', $startDate)
                             ->where('trip_date', '<=', $endDate);
                     }
                 ]
-            )->paginate(
-                $perPage ?? Paginate::PERPAGE,
-                '*',
-                Paginate::PAGEATTRIBUTE,
-                $page ?? Paginate::PAGE
             );
     }
     

@@ -14,9 +14,8 @@ interface CrudService
      *
      * @param int $perPage
      * @param int $page
-     * @return LengthAwarePaginator
      */
-    public function getAll(int $perPage = 10, int $page = 1): LengthAwarePaginator;
+    public function get(array $params, $order = null);
     
     /**
      * Create entity
